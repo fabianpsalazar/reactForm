@@ -1,43 +1,40 @@
 import React, {useState} from 'react';
 
 function App(){
-  
+
   const [city, setCity] = useState('London');
 
-  const [data, setData] = useState(null);
+  const [weather, setWeather] = useState({
+    main : '',
+    description : '',
+  });
 
-  const handleDefault = (e) => {    
-    e.preventDefault();
-    api(city);
+  const api = function(e) {
+    e.preventDefault()
+    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=756e1ed2fe991872de14ad51f17caea1`)
+    .then(data => data.json())
+    .then(data => setWeather({
+      main : data.weather[0].main,
+      description : data.weather[0].description,
+    }))
+    console.log(weather)
   }
-
-  const api = async function (city) {
-    try {
-      const res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city},uk&appid=079b76b390ad70c628a14a9a141e5992`);
-      const json = await res.json();
-      console.log(json.weather)
-      setData(json);
-    } catch (err) {
-      console.error('err', err);
-    }
-  
-  }
-
-  const handleStatus = (e) => setCity(e.target.value);
 
   return(
     <>
-    <form method='GET' >
-      <input type='text' onChange={handleStatus} ></input>
-      <button type='submit' onClick={handleDefault}>Submit</button>
-    </form>
+      <h1>Hello World</h1>
+      <form method='GET' onSubmit={api}>
+        <input type='text' value={city} onChange={(e) => setCity(e.target.value)}></input>
+        <button type='submit'>Submit</button>
+      </form>
 
-    <h1>{data.weather[0].main}</h1>
+      <table>
+        <tr>{weather.main}</tr>
+        <tr>{weather.description}</tr>
+      </table>
+
     </>
   )
-
-
 }
-
 
 export default App;
